@@ -1,0 +1,63 @@
+server:
+  port: 8080
+
+spring:
+  reactor:
+    netty:
+      worker:
+        # Ограничиваем количество рабочих потоков Netty
+        count: 4
+      boss:
+        # Ограничиваем количество boss потоков
+        count: 1
+      shutdown-quiet-period: 2
+      shutdown-timeout: 5
+  main:
+    # Ограничиваем пул потоков реактора
+    reactor:
+      schedulers:
+        default-pool-size: 4
+        max-pool-size: 8
+        ttl: 60
+  task:
+    execution:
+      pool:
+        # Ограничиваем пул applicationTaskExecutor
+        core-size: 4
+        max-size: 8
+        queue-capacity: 100
+        keep-alive: 60s
+
+# Настройки для эмулятора
+emulator:
+  # Настройки задержки ответа (в миллисекундах)
+  delay:
+    min: 100
+    max: 500
+  # Путь к файлу с JSON-ответом
+  response-config: classpath:response.json
+
+# Настройки для actuator и prometheus
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: emulator-service
+    export:
+      prometheus:
+        enabled: true
+    enable:
+      all: true
+
+# Настройки для OpenAPI
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
