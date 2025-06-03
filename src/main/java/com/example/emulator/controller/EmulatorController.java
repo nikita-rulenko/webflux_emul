@@ -2,9 +2,10 @@ package com.example.emulator.controller;
 
 import com.example.emulator.service.EmulatorService;
 import com.fasterxml.jackson.databind.JsonNode;
-//import io.swagger.v3.oas.annotations.Operation;
-//import io.swagger.v3.oas.annotations.tags.Tag;
-
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,38 +13,46 @@ import reactor.core.publisher.Mono;
 
 /**
  * REST контроллер для эмулятора.
- * @RestController - говорит Spring, что этот класс обрабатывает HTTP запросы
- * @RequestMapping("/api/v1") - все URL методов будут начинаться с /api/v1
+ * Обрабатывает входящие HTTP-запросы и собирает метрики.
  */
 @RestController
 @RequestMapping("/api/v1")
-//@Tag(name = "Emulator API", description = "API эмулятора с настраиваемой задержкой")
 public class EmulatorController {
+    private static final Logger log = LoggerFactory.getLogger(EmulatorController.class);
+    
     private final EmulatorService emulatorService;
+    private final Counter requestCounter;
+    private final Timer responseTimer;
 
     /**
-     * Конструктор с внедрением зависимости EmulatorService
-     * Spring автоматически предоставит нужный экземпляр сервиса
+     * Конструктор с внедрением зависимостей.
+     * Инициализирует сервис и метрики для мониторинга.
+     *
+     * @param emulatorService - сервис эмулятора
+     * @param requestCounter - счетчик запросов
+     * @param responseTimer - таймер времени ответа
      */
-    public EmulatorController(EmulatorService emulatorService) {
+    public EmulatorController(EmulatorService emulatorService, 
+                             Counter requestCounter,
+                             Timer responseTimer) {
         this.emulatorService = emulatorService;
+        this.requestCounter = requestCounter;
+        this.responseTimer = responseTimer;
+        log.info("Контроллер инициализирован с метриками");
     }
 
     /**
-     * Метод обработки HTTP GET запроса к /api/v1/emulate
-     * 
-     * @GetMapping - Spring аннотация, которая говорит:
-     * "Когда придет GET запрос на URL /api/v1/emulate, вызови этот метод"
-     * 
-     * Возвращает Mono<JsonNode> - реактивную обертку над JSON,
-     * что позволяет Spring WebFlux обрабатывать ответ асинхронно
+     * Обрабатывает GET-запросы на /api/v1/emulate.
+     * Измеряет время ответа и считает количество запросов.
+     *
+     * @return Mono<JsonNode> - реактивный ответ в формате JSON
      */
     @GetMapping("/emulate")
-//    @Operation(
-//        summary = "Получить эмулированный ответ",
-//        description = "Возвращает JSON из файла конфигурации с настраиваемой задержкой"
-//    )
-    public Mono<JsonNode> emulate() {
-        return emulatorService.getEmulatedResponse();
+    public Mono<JsonNode> getEmulatedResponse() {
+        // Увеличиваем счетчик запросов
+        requestCounter.increment();
+        
+        // Замеряем время обработки запроса
+        return responseTimer.record(() -> emulatorService.getEmulatedResponse());
     }
 }

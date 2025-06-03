@@ -1,32 +1,14 @@
 server:
   port: 8080
 
+reactor:
+  netty:
+    ioWorkerCount: 4    # Количество воркер-потоков IO
+    selectCount: 4      # Количество селектор-потоков
+
 spring:
-  reactor:
-    netty:
-      worker:
-        # Ограничиваем количество рабочих потоков Netty
-        count: 4
-      boss:
-        # Ограничиваем количество boss потоков
-        count: 1
-      shutdown-quiet-period: 2
-      shutdown-timeout: 5
   main:
-    # Ограничиваем пул потоков реактора
-    reactor:
-      schedulers:
-        default-pool-size: 4
-        max-pool-size: 8
-        ttl: 60
-  task:
-    execution:
-      pool:
-        # Ограничиваем пул applicationTaskExecutor
-        core-size: 4
-        max-size: 8
-        queue-capacity: 100
-        keep-alive: 60s
+    web-application-type: reactive
 
 # Настройки для эмулятора
 emulator:
@@ -34,8 +16,6 @@ emulator:
   delay:
     min: 100
     max: 500
-  # Путь к файлу с JSON-ответом
-  response-config: classpath:response.json
 
 # Настройки для actuator и prometheus
 management:
