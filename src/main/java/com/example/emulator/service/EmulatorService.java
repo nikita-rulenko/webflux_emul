@@ -21,16 +21,13 @@
 package com.example.emulator.service;
 
 import com.example.emulator.config.EmulatorConfig;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.example.emulator.dto.EmulatorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Random;
 
 /**
@@ -74,12 +71,11 @@ public class EmulatorService {
      *
      * @return Mono<JsonNode> - реактивная обертка над JSON ответом
      */
-    public Mono<JsonNode> getEmulatedResponse() {
+    public Mono<EmulatorResponse> getEmulatedResponse() {
         Duration delay = getRandomDelay();
-        JsonNode response = generateResponse();
         log.debug("Запрос получен, ответ будет отправлен через: {} мс", delay.toMillis());
         
-        return Mono.just(response)
+        return Mono.just(EmulatorResponse.createResponse())
                 .delayElement(delay);
     }
 
@@ -93,17 +89,5 @@ public class EmulatorService {
         return Duration.ofMillis(random.nextInt(delayRange) + minDelay);
     }
 
-    /**
-     * Генерирует динамический JSON-ответ.
-     * Включает текущее время и статус.
-     *
-     * @return JsonNode - сгенерированный JSON-ответ
-     */
-    private JsonNode generateResponse() {
-        var response = new ObjectNode(JsonNodeFactory.instance)
-            .put("timestamp", System.currentTimeMillis())
-            .put("status", "success")
-            .put("message", "Response generated at: " + LocalDateTime.now());
-        return response;
-    }
+
 }

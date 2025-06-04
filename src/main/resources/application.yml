@@ -1,11 +1,6 @@
 server:
   port: 8080
 
-reactor:
-  netty:
-    ioWorkerCount: 4    # Количество воркер-потоков IO
-    selectCount: 4      # Количество селектор-потоков
-
 spring:
   main:
     web-application-type: reactive
