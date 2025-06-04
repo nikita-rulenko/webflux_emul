@@ -11,7 +11,8 @@ import reactor.core.publisher.Mono;
 
 /**
  * REST контроллер для эмулятора.
- * Обрабатывает входящие HTTP-запросы и собирает метрики.
+ * Обрабатывает входящие HTTP-запросы.
+ * Метрики собираются автоматически через Spring Actuator.
  */
 @RestController
 @RequestMapping("/api/v1")
@@ -32,10 +33,10 @@ public class EmulatorController {
     }
 
     /**
-     * Обрабатывает GET-запросы на /api/v1/emulate.
-     * Измеряет время ответа и считает количество запросов.
+     * Обрабатывает GET-запросы к эмулятору.
+     * Делегирует обработку в EmulatorService и возвращает реактивный ответ.
      *
-     * @return Mono<JsonNode> - реактивный ответ в формате JSON
+     * @return Mono<EmulatorResponse> - реактивный ответ, который будет автоматически преобразован в JSON
      */
     @GetMapping("/emulate")
     public Mono<EmulatorResponse> getEmulatedResponse() {

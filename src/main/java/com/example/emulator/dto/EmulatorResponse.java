@@ -5,7 +5,12 @@ import java.time.LocalDateTime;
 
 /**
  * DTO для ответа эмулятора.
- * Инкапсулирует структуру JSON-ответа.
+ * Представляет собой иммутабельный объект с тремя полями:
+ * - timestamp: время в миллисекундах
+ * - status: статус ответа
+ * - message: текстовое сообщение
+ *
+ * Использует Jackson для сериализации в JSON.
  */
 public class EmulatorResponse {
     @JsonProperty("timestamp")

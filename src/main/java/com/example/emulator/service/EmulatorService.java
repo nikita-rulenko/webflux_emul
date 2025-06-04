@@ -1,21 +1,15 @@
 /**
- * Архитектура проекта Spring WebFlux Emulator:
+ * Сервисный слой эмулятора.
  *
- * 1. Порядок выполнения и связи компонентов:
- *    - Main.java: точка входа, запускает Spring Boot приложение
- *    - EmulatorController: REST контроллер, принимает HTTP запросы
- *    - EmulatorService (этот класс): бизнес-логика, загрузка JSON и эмуляция задержки
- *    - EmulatorConfig: конфигурация из application.yml
- *
- * 2. Service слой в WebFlux:
+ * Ключевые моменты:
+ * 1. Архитектура:
  *    - @Service - стандартная аннотация Spring для бизнес-логики
- *    - Этот слой НЕ является специфичным для WebFlux
- *    - Но использует реактивные типы (Mono) для асинхронной обработки
+ *    - Отвечает за генерацию ответа с задержкой
  *
- * 3. Ключевые компоненты:
- *    - ResourceLoader: Spring-компонент для загрузки файлов из classpath/файловой системы
- *    - ObjectMapper: Jackson-компонент для работы с JSON
- *    - Mono: реактивный тип WebFlux для асинхронной обработки одиночного значения
+ * 2. Ключевые компоненты:
+ *    - EmulatorConfig: настройки задержки из application.yml
+ *    - EmulatorResponse: DTO для формирования ответа
+ *    - Mono: реактивный тип для асинхронной обработки
  */
 
 package com.example.emulator.service;
@@ -66,10 +60,10 @@ public class EmulatorService {
     }
 
     /**
-     * Возвращает JSON-ответ с эмулированной задержкой.
-     * Использует реактивный подход с Mono для неблокирующей обработки.
+     * Генерирует ответ с заданной задержкой.
+     * Задержка выбирается случайным образом из заданного диапазона.
      *
-     * @return Mono<JsonNode> - реактивная обертка над JSON ответом
+     * @return Mono<EmulatorResponse> - реактивная обертка над DTO ответом
      */
     public Mono<EmulatorResponse> getEmulatedResponse() {
         Duration delay = getRandomDelay();

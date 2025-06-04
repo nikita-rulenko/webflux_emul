@@ -5,10 +5,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Конфигурация эмулятора, загружаемая из application.yml
  * 
- * @ConfigurationProperties автоматически привязывает свойства из файла конфигурации
- * к полям класса, используя префикс "emulator"
- * 
- * @Validated включает валидацию полей при загрузке конфигурации
+ * Настройки из YAML файла:
+ * emulator:
+ *   delay:
+ *     min: 100  # минимальная задержка в мс
+ *     max: 500  # максимальная задержка в мс
+ *
+ * Класс включает валидацию значений:
+ * - min должен быть неотрицательным
+ * - min должен быть меньше или равен max
  */
 @ConfigurationProperties(prefix = "emulator")
 public class EmulatorConfig {
