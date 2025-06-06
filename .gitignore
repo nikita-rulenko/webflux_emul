@@ -81,3 +81,8 @@ docker/volumes/
 test-output/
 reports/
 .jmeter/
+
+# Example/temp JSON files
+request_example.json
+resp_check.json
+response_body.json
