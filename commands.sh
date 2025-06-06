@@ -1,0 +1,1 @@
+docker stop $(docker ps -q) || true && docker rm $(docker ps -aq) || true && mvn clean package -DskipTests && docker build -t emulator-service . && docker run -p 8080:8080 -p 9010:9010 emulator-service

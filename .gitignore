@@ -86,3 +86,6 @@ reports/
 request_example.json
 resp_check.json
 response_body.json
+
+# Configuration files (if to be kept local)
+src/main/resources/cpn-list.json

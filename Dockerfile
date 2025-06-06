@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY target/emulator-service-1.0.0.jar app.jar
 COPY src/main/resources/application.yml application.yml
+COPY src/main/resources/cpn-list.json cpn-list.json
 
 ENV JAVA_TOOL_OPTIONS="-Dcom.sun.management.jmxremote \
     -Dcom.sun.management.jmxremote.port=9010 \
