@@ -37,10 +37,9 @@ public class OrderResponseService {
     private static final String USE_TEXT = "use";
     private static final String PROMO_CODE_TEXT = "CODE123";
     private static final Logger log = LoggerFactory.getLogger(OrderResponseService.class);
-    /** Формат даты и времени без временной зоны */
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Europe/Moscow"));
-    /** Формат даты и времени с временной зоной */
-    private static final DateTimeFormatter DATE_TIME_FORMATTER_WITH_ZONE = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssXXX").withZone(ZoneId.of("Europe/Moscow"));
+    /** Целевой формат даты и времени */
+    private static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
     private static final Random randomGenerator = new Random(); // Renamed to avoid conflict with new field
 
     private final CpnConfigurationService cpnConfigurationService;
@@ -101,7 +100,7 @@ public class OrderResponseService {
             List<OrderResponseData.Order> orders = createOrders(orderIdFrom, orderIds, limit, cpn, now);
             log.info("Created {} orders", orders.size());
             
-            var timestamp = formatDateTime(now, true);
+            var timestamp = formatDateTime(now);
             var response = createOrderResponse(orders, orderIdFrom, orderIds, limit, timestamp);
             
             return response;
@@ -194,10 +193,10 @@ public class OrderResponseService {
             null,  // clientOS
             true,  // agreement
             PAYMENT_TYPE_SPS_BONUSES, // payment_type
-            formatDateTime(orderTime, true), // pay_datetime
+            formatDateTime(orderTime), // pay_datetime
             1,    // promocodes_count
             new OrderResponseData.Order.TotalAmount(null, 100), // total_amount
-            formatDateTime(orderTime, true), // date_created - ТЕПЕРЬ С ВРЕМЕННОЙ ЗОНОЙ
+            formatDateTime(orderTime), // date_created
             PRODUCT_TYPE_COUPON, // product_type
             COMBINED_PDF_URL, // combined_pdf_url
             UUID.randomUUID().toString(), // reserve_key
@@ -252,7 +251,7 @@ public class OrderResponseService {
                         null, // pdf_url - Static value (null) from response_body.json
                         0,          // type
                         1234,      // pin - СТАЛО 1234
-                        formatDateTime(LocalDateTime.now().plusYears(1), false) // end_date_time
+                        formatDateTime(LocalDateTime.now().minusDays(1)) // end_date_time
                     )
                 )
             )
@@ -271,7 +270,7 @@ public class OrderResponseService {
         if (orderIdFrom != null) {
             lastOrderIdInStats = orderIdFrom + 10;
         }
-        String dateCreatedInStats = formatDateTime(LocalDateTime.now(), false);
+        String dateCreatedInStats = formatDateTime(LocalDateTime.now());
 
         // Assuming OrderResponseCouponStats and LastOrder are nested correctly as per DTO structure
         // This part might need adjustment if DTO structure for Stats is different
@@ -318,15 +317,16 @@ private Duration getRandomDelay() {
 }
 
 /**
- * Форматирует дату и время в строку.
+ * Форматирует LocalDateTime в строку согласно TARGET_DATE_TIME_FORMATTER.
  * 
- * @param dateTime Дата и время для форматирования
- * @param withZone Если true, добавляет временную зону
- * @return Отформатированная строка с датой и временем
+ * @param dateTime Дата и время для форматирования (без зоны)
+ * @return Отформатированная строка с датой и временем в зоне Europe/Moscow
  */
-private String formatDateTime(LocalDateTime dateTime, boolean withZone) {
-    return dateTime.atZone(ZoneId.of("Europe/Moscow"))
-            .format(withZone ? DATE_TIME_FORMATTER_WITH_ZONE : DATE_TIME_FORMATTER);
+private String formatDateTime(LocalDateTime localDateTime) {
+    if (localDateTime == null) {
+        return null;
     }
+    // Применяем системную зону по умолчанию, так как XXX в паттерне требует информации о зоне/смещении
+    return localDateTime.atZone(ZoneId.systemDefault()).format(DATE_TIME_FORMATTER);
 }
-
+}
