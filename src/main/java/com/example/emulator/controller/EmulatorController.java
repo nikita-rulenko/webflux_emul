@@ -81,7 +81,7 @@ public class EmulatorController {
      */
     @PostMapping(value = "/cpn/orders", produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<OrderResponse> getOrders(
-            @RequestHeader("X-Request-Id") String requestId,
+            @RequestHeader("RqUID") String requestId,
             @RequestBody OrderRequest request) {
         log.debug("Получен запрос на получение заказов. Request-Id: {}, запрос: {}", requestId, request);
         return orderResponseService.generateOrderResponse(

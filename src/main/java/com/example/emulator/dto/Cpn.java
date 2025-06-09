@@ -16,8 +16,8 @@ public record Cpn(
     @JsonProperty("use") 
     String use,
     
-    @JsonProperty("condition") 
-    String condition,
+    @JsonProperty("conditions") 
+    String conditions,
     
     @JsonProperty("partner_omni_id") 
     long partnerOmniId,

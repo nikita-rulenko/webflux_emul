@@ -38,11 +38,12 @@ public record OrderResponse(
         }
 
         @JsonPropertyOrder({
-                "client_id", "order_id_sbol", "order_number", "order_external_id", "status", "rules",
+                "order_id", "client_id", "order_id_sbol", "order_number", "order_external_id", "status", "rules",
                 "channel", "clientOS", "agreement", "payment_type", "pay_datetime", "promocodes_count",
                 "total_amount", "date_created", "product_type", "combined_pdf_url", "reserve_key", "product"
         })
         public record Order(
+                @JsonProperty("order_id") Long orderId,
                 @JsonProperty("client_id") String clientId,
                 @JsonProperty("order_id_sbol") String orderIdSbol,
                 @JsonProperty("order_number") Long orderNumber,

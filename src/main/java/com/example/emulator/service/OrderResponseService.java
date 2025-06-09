@@ -182,23 +182,27 @@ public class OrderResponseService {
         }
         var selectedOffer = cpn.offers().get(0); // Берем первый оффер для примера
         
+        Long orderNumber = determineOrderNumber(orderIdFrom, orderIds, index);
+        String clientId = String.valueOf(randomGenerator.nextInt(1000000)); // client_id - случайное число строкой
+        
         return new OrderResponseData.Order(
-            String.valueOf(randomGenerator.nextInt(1000000)), // client_id - случайное число строкой
-            null,  // order_id_sbol
-            determineOrderNumber(orderIdFrom, orderIds, index), // order_number
-            null,  // order_external_id
-            STATUS_SUCCESS, // status
-            RULES_URL, // rules
-            CHANNEL_WEB, // channel
-            null,  // clientOS
-            true,  // agreement
-            PAYMENT_TYPE_SPS_BONUSES, // payment_type
+            orderNumber, // order_id (new field, same as order_number)
+            clientId,
+            null, // order_id_sbol
+            orderNumber, // order_number (original field)
+            null, // order_external_id
+            STATUS_SUCCESS,
+            RULES_URL,
+            CHANNEL_WEB,
+            null, // clientOS
+            true, // agreement
+            PAYMENT_TYPE_SPS_BONUSES,
             formatDateTime(orderTime), // pay_datetime
-            1,    // promocodes_count
-            new OrderResponseData.Order.TotalAmount(null, 100), // total_amount
+            1, // promocodes_count
+            new OrderResponseData.Order.TotalAmount(null, 100),
             formatDateTime(orderTime), // date_created
-            PRODUCT_TYPE_COUPON, // product_type
-            COMBINED_PDF_URL, // combined_pdf_url
+            PRODUCT_TYPE_COUPON,
+            COMBINED_PDF_URL,
             UUID.randomUUID().toString(), // reserve_key
             createProduct(cpn, selectedOffer)
         );
