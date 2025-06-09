@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.Duration;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -317,16 +317,16 @@ private Duration getRandomDelay() {
 }
 
 /**
- * Форматирует LocalDateTime в строку согласно TARGET_DATE_TIME_FORMATTER.
- * 
- * @param dateTime Дата и время для форматирования (без зоны)
- * @return Отформатированная строка с датой и временем в зоне Europe/Moscow
+ * Форматирует LocalDateTime в строку согласно DATE_TIME_FORMATTER с фиксированным смещением +03:00.
+ *
+ * @param localDateTime Дата и время для форматирования (без зоны)
+ * @return Отформатированная строка с датой и временем и смещением +03:00
  */
 private String formatDateTime(LocalDateTime localDateTime) {
     if (localDateTime == null) {
         return null;
     }
-    // Применяем системную зону по умолчанию, так как XXX в паттерне требует информации о зоне/смещении
-    return localDateTime.atZone(ZoneId.systemDefault()).format(DATE_TIME_FORMATTER);
+    // Применяем фиксированное смещение +03:00, так как XXX в паттерне требует информации о зоне/смещении
+    return localDateTime.atOffset(ZoneOffset.ofHours(3)).format(DATE_TIME_FORMATTER);
 }
 }
